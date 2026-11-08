@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101b19">
+<title>Ocarina Virtual — Uma melodia pode mudar o destino</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0c1514; --panel:#142321; --panel2:#192b27; --line:rgba(220,235,211,.12);
+    --text:#f0f0dc; --muted:#a7b7a9; --gold:#e8c77e; --mint:#a8d6b1; --green:#6da985;
+    --shadow:0 24px 70px rgba(0,0,0,.34);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 16% 8%,rgba(84,139,105,.18),transparent 35%),radial-gradient(ellipse at 90% 80%,rgba(184,145,80,.12),transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;}
+  button,input{font:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:34px 22px 42px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:26px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .brand-mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#d9bd79,#7c9e78);box-shadow:0 8px 26px rgba(122,163,117,.22);color:#15211c;font-size:22px}
+  .eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  h1{font-family:Georgia,serif;font-size:clamp(25px,4vw,38px);font-weight:500;letter-spacing:.01em;margin:3px 0 0}
+  .header-note{color:var(--muted);font-size:13px;text-align:right;line-height:1.5}
+  .hero{display:grid;grid-template-columns:1.02fr .98fr;gap:22px;margin-bottom:22px}
+  .card{background:linear-gradient(145deg,rgba(25,43,39,.96),rgba(17,31,29,.96));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+  .intro{padding:28px 30px;position:relative;overflow:hidden;min-height:290px}
+  .intro:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(232,199,126,.10);border-radius:50%;right:-110px;bottom:-145px;box-shadow:0 0 0 24px rgba(232,199,126,.025),0 0 0 50px rgba(232,199,126,.02)}
+  .intro h2{font:500 clamp(27px,3.5vw,40px)/1.14 Georgia,serif;max-width:530px;margin:15px 0 12px}
+  .intro p{color:var(--muted);line-height:1.7;max-width:500px;margin:0;font-size:14px}
+  .status{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:9px 12px;border:1px solid var(--line);border-radius:99px;color:#d9e3d5;background:rgba(255,255,255,.035);font-size:12px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#839d89;box-shadow:0 0 12px #839d89}
+  .instrument{display:grid;place-items:center;padding:24px;min-height:290px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,rgba(195,163,104,.13),transparent 58%),linear-gradient(145deg,#1b302a,#101c1b)}
+  .instrument svg{width:min(100%,450px);height:auto;filter:drop-shadow(0 22px 22px rgba(0,0,0,.34));overflow:visible}
+  .instrument .halo{position:absolute;width:220px;height:220px;border:1px solid rgba(232,199,126,.1);border-radius:50%;box-shadow:0 0 0 20px rgba(232,199,126,.025),0 0 0 42px rgba(232,199,126,.02)}
+  .instrument.playing .halo{animation:pulse 1.6s ease-out infinite}
+  @keyframes pulse{0%{transform:scale(.86);opacity:.3}70%{transform:scale(1.16);opacity:.8}100%{transform:scale(1.3);opacity:0}}
+  .controls{padding:19px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .control-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .control-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .octave{display:flex;align-items:center;gap:10px;background:#0e1917;border:1px solid var(--line);border-radius:13px;padding:5px}
+  .icon-btn,.small-btn{border:1px solid var(--line);background:#1d302a;color:var(--text);border-radius:10px;cursor:pointer;transition:.16s ease}
+  .icon-btn{width:34px;height:34px;font-size:18px}
+  .small-btn{padding:10px 14px;font-size:13px;font-weight:700}
+  button:hover{border-color:rgba(232,199,126,.55);transform:translateY(-1px)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  button:active{transform:translateY(1px)}
+  .octave-value{min-width:82px;text-align:center;font-size:13px;font-weight:800}
+  .volume{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+  input[type=range]{accent-color:var(--gold);width:115px}
+  .keys-card{padding:24px 24px 20px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px}
+  h3{font:500 24px Georgia,serif;margin:0}
+  .section-sub{font-size:12px;color:var(--muted);margin-top:5px}
+  .legend{font-size:11px;color:var(--muted);text-align:right}
+  .keyboard{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+  .note{min-height:92px;border:1px solid rgba(219,230,211,.16);border-radius:14px;background:linear-gradient(160deg,#e6e4cc,#c4c8ad);color:#1c2a25;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:inset 0 -4px 0 rgba(32,49,39,.12),0 5px 12px rgba(0,0,0,.13);user-select:none;touch-action:none;transition:transform .09s,box-shadow .09s,background .09s;}
+  .note.sharp{background:linear-gradient(160deg,#31443d,#1d302a);color:#f3f1db;border-color:rgba(220,235,211,.18);box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 5px 12px rgba(0,0,0,.18)}
+  .note .note-name{font:700 19px Georgia,serif}
+  .note .note-oct{font-size:10px;opacity:.68;letter-spacing:.08em}
+  .note .keycap{position:absolute;top:8px;left:9px;min-width:21px;padding:3px 5px;border-radius:6px;background:rgba(20,35,29,.13);font:800 10px ui-monospace,monospace;text-transform:uppercase}
+  .note.sharp .keycap{background:rgba(240,242,220,.12)}
+  .note.active,.note:active{transform:translateY(3px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.2);background:linear-gradient(160deg,#f0d99a,#d2b777);color:#1b2a23;border-color:rgba(232,199,126,.85)}
+  .note.sharp.active{background:linear-gradient(160deg,#9dc4a2,#5f9975);color:#12221a}
+  .note.sharp.active .keycap{background:rgba(20,35,29,.12)}
+  .below{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;margin-top:22px}
+  .recorder,.guide{padding:22px 24px}
+  .recorder-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+  .recorder-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .action{padding:10px 13px;border-radius:11px;border:1px solid var(--line);background:#1d302a;color:var(--text);font-weight:700;font-size:12px;cursor:pointer}
+  .action.primary{background:linear-gradient(135deg,#e3c47d,#b99b62);color:#1b281f;border:0}
+  .action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+  .record-status{font-size:12px;color:var(--muted);line-height:1.5;min-height:36px}
+  .record-status strong{color:var(--gold)}
+  .guide p{font-size:13px;color:var(--muted);line-height:1.65;margin:8px 0 0}
+  .shortcut-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  kbd{font:700 11px ui-monospace,monospace;padding:5px 7px;background:#0d1916;border:1px solid var(--line);border-radius:6px;color:#e8d9ac;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+  footer{text-align:center;color:#778b7e;font-size:11px;letter-spacing:.04em;padding:26px 0 0}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,18px);opacity:0;pointer-events:none;padding:11px 16px;background:#e5c57e;color:#18231c;border-radius:99px;font-weight:800;font-size:12px;box-shadow:0 12px 36px rgba(0,0,0,.3);transition:.25s;z-index:5}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  @media(max-width:800px){.hero,.below{grid-template-columns:1fr}.instrument{min-height:235px}.header-note{display:none}}
+  @media(max-width:520px){.wrap{padding:20px 13px 28px}.intro{padding:23px;min-height:0}.instrument{min-height:210px}.controls{padding:16px}.keys-card{padding:18px 14px}.keyboard{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.note{min-height:82px}.section-head{align-items:flex-start;flex-direction:column}.legend{text-align:left}.recorder,.guide{padding:19px 17px}.recorder-head{align-items:flex-start;flex-direction:column}}
+  @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">♫</div>
+      <div><div class="eyebrow">Instrumento virtual</div><h1>Ocarina do Tempo</h1></div>
+    </div>
+    <div class="header-note">Uma pequena melodia pode mudar o destino.<br>Feita para tocar, explorar e improvisar.</div>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Introdução e ilustração da ocarina">
+      <div class="card intro">
+        <div class="eyebrow">Respire fundo. Escolha uma nota.</div>
+        <h2>Deixe sua melodia<br>atravessar Hyrule.</h2>
+        <p>Toque pelas teclas do computador ou clique nas notas. Segure para sustentar o som e solte para encerrá-lo. Use fones para ouvir melhor os detalhes.</p>
+        <div class="status" id="status"><span class="dot"></span><span id="statusText">Aguardando a primeira nota</span></div>
+      </div>
+      <div class="card instrument" id="instrument" aria-label="Ilustração decorativa de uma ocarina">
+        <div class="halo"></div>
+        <svg viewBox="0 0 500 270" role="img" aria-label="Ocarina de cerâmica verde com orifícios dourados">
+          <defs>
+            <linearGradient id="body" x1="0" y1="0" x2=".85" y2="1"><stop stop-color="#d6bd82"/><stop offset=".35" stop-color="#8b9e73"/><stop offset=".72" stop-color="#496c59"/><stop offset="1" stop-color="#233f38"/></linearGradient>
+            <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff1c5" stop-opacity=".7"/><stop offset="1" stop-color="#fff1c5" stop-opacity="0"/></linearGradient>
+            <radialGradient id="hole"><stop stop-color="#101b17"/><stop offset=".72" stop-color="#172922"/><stop offset="1" stop-color="#c6ad73"/></radialGradient>
+          </defs>
+          <g transform="rotate(-8 250 135)">
+            <path d="M56 153 C70 104 122 74 190 78 C238 47 313 57 347 89 C390 88 438 113 449 150 C458 183 420 207 371 209 C319 238 244 224 209 205 C139 224 75 202 56 153Z" fill="url(#body)" stroke="#d4c18e" stroke-opacity=".65" stroke-width="3"/>
+            <path d="M77 143 C104 99 153 91 195 94 C250 70 314 80 343 106 C385 103 420 122 429 149" fill="none" stroke="url(#shine)" stroke-width="8" stroke-linecap="round" opacity=".6"/>
+            <path d="M53 148 C29 140 20 122 31 108 C44 91 69 97 82 115 L99 147Z" fill="#314f43" stroke="#d1bd84" stroke-width="3"/>
+            <ellipse cx="62" cy="125" rx="12" ry="10" fill="url(#hole)" stroke="#e0c98e" stroke-width="3"/>
+            <g fill="url(#hole)" stroke="#d9c28a" stroke-width="3">
+              <ellipse cx="152" cy="133" rx="16" ry="13"/><ellipse cx="202" cy="111" rx="15" ry="12"/><ellipse cx="244" cy="151" rx="16" ry="13"/>
+              <ellipse cx="296" cy="118" rx="15" ry="12"/><ellipse cx="343" cy="151" rx="16" ry="13"/><ellipse cx="390" cy="139" rx="13" ry="11"/>
+              <ellipse cx="188" cy="181" rx="12" ry="10"/><ellipse cx="278" cy="190" rx="12" ry="10"/>
+            </g>
+            <path d="M113 171 Q140 195 167 193" fill="none" stroke="#e6d2a0" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="320" cy="90" r="4" fill="#f5e6b8" opacity=".7"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="card controls" aria-label="Controles do instrumento">
+      <div class="control-group">
+        <span class="control-label">Oitava</span>
+        <div class="octave">
+          <button class="icon-btn" id="octDown" aria-label="Diminuir oitava">−</button>
+          <span class="octave-value" id="octaveLabel">4ª oitava</span>
+          <button class="icon-btn" id="octUp" aria-label="Aumentar oitava">+</button>
+        </div>
+      </div>
+      <label class="volume"><span class="control-label">Volume</span><input id="volume" type="range" min="0" max="100" value="72"><strong id="volumeValue">72%</strong></label>
+      <button class="small-btn" id="audioTest" title="Toca uma nota de referência">♪ Testar som</button>
+    </section>
+
+    <section class="card keys-card" aria-label="Teclado da ocarina">
+      <div class="section-head">
+        <div><h3>Teclado da ocarina</h3><div class="section-sub">Cada tecla toca uma nota. As teclas escuras são sustenidos.</div></div>
+        <div class="legend">Mapa: teclado QWERTY · clique ou toque também funciona</div>
+      </div>
+      <div class="keyboard" id="keyboard"></div>
+    </section>
+
+    <section class="below">
+      <div class="card recorder">
+        <div class="recorder-head">
+          <div><h3>Seu pequeno concerto</h3><div class="section-sub">Grave uma sequência e escute novamente.</div></div>
+          <div class="recorder-actions">
+            <button class="action primary" id="recordBtn">● Gravar</button>
+            <button class="action" id="playBtn" disabled>▶ Reproduzir</button>
+            <button class="action" id="clearBtn" disabled>Limpar</button>
+          </div>
+        </div>
+        <div class="record-status" id="recordStatus" aria-live="polite">Nenhuma melodia gravada ainda. Aperte <strong>Gravar</strong> e toque algumas notas.</div>
+      </div>
+      <div class="card guide">
+        <h3>Mapa das teclas</h3>
+        <p>O mapa segue a lógica de piano virtual: as letras principais fazem as notas naturais e as letras entre elas fazem os sustenidos. Você pode mudar a oitava sem alterar os atalhos.</p>
+        <div class="shortcut-list" id="shortcutList"></div>
+      </div>
+    </section>
+  </main>
+  <footer>OCARINA VIRTUAL · SOM GERADO NO PRÓPRIO NAVEGADOR · PROJETO DE FÃ, SEM VÍNCULO COM A NINTENDO</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  'use strict';
+  const keyMap = ['a','w','s','e','d','f','t','g','y','h','u','j','k','o','l','p',';',"'",'z','x','c','v','b','n','m'];
+  const noteNames = ['Dó','Dó♯','Ré','Ré♯','Mi','Fá','Fá♯','Sol','Sol♯','Lá','Lá♯','Si'];
+  const keyboard = document.getElementById('keyboard');
+  const statusText = document.getElementById('statusText');
+  const instrument = document.getElementById('instrument');
+  const octaveLabel = document.getElementById('octaveLabel');
+  const volumeInput = document.getElementById('volume');
+  const volumeValue = document.getElementById('volumeValue');
+  const recordBtn = document.getElementById('recordBtn');
+  const playBtn = document.getElementById('playBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const recordStatus = document.getElementById('recordStatus');
+  const toast = document.getElementById('toast');
+  let octave = 4;
+  let audioCtx = null;
+  let master = null;
+  let active = new Map();
+  let recording = false;
+  let recordStart = 0;
+  let takes = [];
+  let playbackTimers = [];
+  let isPlaying = false;
+  let toastTimer;
+
+  function ensureAudio(){
+    if(!audioCtx){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx){ showToast('Seu navegador não oferece áudio Web.'); return false; }
+      audioCtx = new Ctx();
+      master = audioCtx.createGain();
+      master.gain.value = Number(volumeInput.value)/100;
+      master.connect(audioCtx.destination);
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    return true;
+  }
+  function midiFrequency(midi){ return 440 * Math.pow(2,(midi-69)/12); }
+  function startTone(id, semitone, fromPlayback=false){
+    if(active.has(id) || !ensureAudio()) return;
+    const midi = (octave + 1) * 12 + semitone;
+    const now = audioCtx.currentTime;
+    const envelope = audioCtx.createGain();
+    envelope.gain.setValueAtTime(0.0001,now);
+    envelope.gain.exponentialRampToValueAtTime(0.72,now+0.045);
+    envelope.connect(master);
+    const fundamental = audioCtx.createOscillator();
+    fundamental.type = 'sine';
+    fundamental.frequency.setValueAtTime(midiFrequency(midi),now);
+    fundamental.connect(envelope);
+    const harmonic = audioCtx.createOscillator();
+    harmonic.type = 'sine';
+    harmonic.frequency.setValueAtTime(midiFrequency(midi)*2,now);
+    const harmonicGain = audioCtx.createGain();
+    harmonicGain.gain.value = 0.075;
+    harmonic.connect(harmonicGain);
+    harmonicGain.connect(envelope);
+    fundamental.start(now); harmonic.start(now);
+    const voice = {envelope, fundamental, harmonic, midi, startedAt:performance.now(), recordEvent:null};
+    active.set(id,voice);
+    setVisual(semitone,true);
+    statusText.textContent = `${noteNames[semitone%12]}${Math.floor(midi/12)-1} · tocando`;
+    instrument.classList.add('playing');
+    if(recording && !fromPlayback){
+      voice.recordEvent = {midi, start:performance.now()-recordStart, duration:0};
+      takes.push(voice.recordEvent);
+      updateRecorder();
+    }
+  }
+  function stopTone(id){
+    const voice = active.get(id);
+    if(!voice || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    if(voice.recordEvent){ voice.recordEvent.duration = Math.max(90,performance.now()-voice.startedAt); }
+    voice.envelope.gain.cancelScheduledValues(now);
+    voice.envelope.gain.setTargetAtTime(0.0001,now,0.055);
+    try{ voice.fundamental.stop(now+0.22); voice.harmonic.stop(now+0.22); }catch(e){}
+    active.delete(id);
+    const semitone = ((voice.midi % 12) + 12) % 12;
+    const stillSame = [...active.values()].some(v => v.midi % 12 === semitone);
+    if(!stillSame) setVisual(semitone,false);
+    if(active.size===0){ instrument.classList.remove('playing'); statusText.textContent = 'Aguardando a próxima nota'; }
+    updateRecorder();
+  }
+  function setVisual(semitone,on){
+    document.querySelectorAll('.note').forEach(el=>{
+      if(Number(el.dataset.semitone)===semitone) el.classList.toggle('active',on);
+    });
+  }
+  function noteLabel(semitone){
+    const midi=(octave+1)*12+semitone;
+    return `${noteNames[semitone%12]}${Math.floor(midi/12)-1}`;
+  }
+  function buildKeyboard(){
+    keyboard.innerHTML='';
+    keyMap.forEach((key,index)=>{
+      const el=document.createElement('button');
+      const sharp=[1,3,6,8,10].includes(index%12);
+      el.type='button'; el.className='note'+(sharp?' sharp':'');
+      el.dataset.semitone=index;
+      el.setAttribute('aria-label',`${noteLabel(index)} — tecla ${key.toUpperCase()}`);
+      el.innerHTML=`<span class="keycap">${key===';'?';':key==='\''?'’':key.toUpperCase()}</span><span class="note-name">${noteNames[index%12]}</span><span class="note-oct">${noteLabel(index).replace(noteNames[index%12],'').trim()}ª OITAVA</span>`;
+      const id=`pointer-${index}`;
+      el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture?.(e.pointerId);startTone(id,index);});
+      const release=()=>stopTone(id);
+      el.addEventListener('pointerup',release); el.addEventListener('pointercancel',release); el.addEventListener('lostpointercapture',release);
+      el.addEventListener('click',e=>{if(e.detail===0){startTone(id,index);setTimeout(()=>stopTone(id),260);}});
+      keyboard.appendChild(el);
+    });
+    document.getElementById('shortcutList').innerHTML=keyMap.slice(0,18).map(k=>`<kbd>${k===';'?';':k==='\''?'’':k.toUpperCase()}</kbd>`).join('')+'<span style="color:var(--muted);font-size:11px;align-self:center">+ Z X C V B N M para as notas mais agudas</span>';
+  }
+  function updateOctave(){
+    octaveLabel.textContent=`${octave}ª oitava`;
+    document.querySelectorAll('.note').forEach((el,i)=>{
+      el.setAttribute('aria-label',`${noteLabel(i)} — tecla ${keyMap[i].toUpperCase()}`);
+      el.querySelector('.note-oct').textContent=`${Math.floor(((octave+1)*12+i)/12)-1}ª OITAVA`;
+    });
+  }
+  function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);}
+  function updateRecorder(){
+    const count=takes.length;
+    playBtn.disabled=recording||count===0||isPlaying;
+    clearBtn.disabled=recording||count===0||isPlaying;
+    if(recording){recordStatus.innerHTML=`<strong>● Gravando...</strong> Toque sua melodia. Aperte “Parar” quando terminar. · ${count} nota(s)`;}
+    else if(count){recordStatus.innerHTML=`Melodia guardada: <strong>${count} nota(s)</strong>. Você pode reproduzir ou limpar para gravar outra.`;}
+    else{recordStatus.innerHTML='Nenhuma melodia gravada ainda. Aperte <strong>Gravar</strong> e toque algumas notas.';}
+  }
+  function toggleRecording(){
+    if(isPlaying)return;
+    recording=!recording;
+    if(recording){takes=[];recordStart=performance.now();recordBtn.textContent='■ Parar';recordBtn.classList.remove('primary');showToast('Gravação iniciada');}
+    else{recordBtn.textContent='● Gravar';recordBtn.classList.add('primary');active.forEach((v,id)=>stopTone(id));showToast(takes.length?'Melodia gravada!':'Nenhuma nota foi gravada');}
+    updateRecorder();
+  }
+  function stopPlayback(){
+    playbackTimers.forEach(clearTimeout); playbackTimers=[];
+    [...active.keys()].filter(id=>String(id).startsWith('play-')).forEach(stopTone);
+    isPlaying=false;playBtn.textContent='▶ Reproduzir';recordBtn.disabled=false;updateRecorder();
+  }
+  function playTake(){
+    if(recording||isPlaying||!takes.length)return;
+    if(!ensureAudio())return;
+    isPlaying=true;recordBtn.disabled=true;playBtn.disabled=true;playBtn.textContent='■ Parar';
+    const events=takes.map(e=>({...e}));
+    events.forEach((ev,i)=>{
+      const onTimer=setTimeout(()=>{
+        if(!isPlaying)return;
+        const id=`play-${i}`;
+        // Reproduz a frequência gravada, mesmo que a oitava atual tenha mudado.
+        startMidiTone(id,ev.midi);
+        const offTimer=setTimeout(()=>stopTone(id),Math.max(90,ev.duration));
+        playbackTimers.push(offTimer);
+      },Math.max(0,ev.start));
+      playbackTimers.push(onTimer);
+    });
+    const end=Math.max(...events.map(e=>e.start+Math.max(90,e.duration)))+350;
+    playbackTimers.push(setTimeout(()=>{if(isPlaying)stopPlayback();},end));
+  }
+  function startMidiTone(id,midi){
+    if(active.has(id)||!ensureAudio())return;
+    const now=audioCtx.currentTime;const envelope=audioCtx.createGain();
+    envelope.gain.setValueAtTime(.0001,now);envelope.gain.exponentialRampToValueAtTime(.72,now+.045);envelope.connect(master);
+    const a=audioCtx.createOscillator();a.type='sine';a.frequency.value=midiFrequency(midi);a.connect(envelope);
+    const b=audioCtx.createOscillator();b.type='sine';b.frequency.value=midiFrequency(midi)*2;const bg=audioCtx.createGain();bg.gain.value=.075;b.connect(bg);bg.connect(envelope);a.start();b.start();
+    active.set(id,{envelope,fundamental:a,harmonic:b,midi,startedAt:performance.now(),recordEvent:null});
+    instrument.classList.add('playing');statusText.textContent=`Reproduzindo ${noteNames[midi%12]}${Math.floor(midi/12)-1}`;
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey||e.altKey||e.metaKey)return;
+    if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+    const key=e.key.toLowerCase();const index=keyMap.indexOf(key);
+    if(index!==-1){e.preventDefault();if(!e.repeat)startTone(`key-${key}`,index);}
+    if(e.key==='Escape'&&isPlaying)stopPlayback();
+  });
+  document.addEventListener('keyup',e=>{const key=e.key.toLowerCase();if(keyMap.includes(key))stopTone(`key-${key}`);});
+  window.addEventListener('blur',()=>{[...active.keys()].forEach(stopTone);});
+  document.getElementById('octDown').addEventListener('click',()=>{if(octave>2){octave--;updateOctave();}});
+  document.getElementById('octUp').addEventListener('click',()=>{if(octave<6){octave++;updateOctave();}});
+  volumeInput.addEventListener('input',()=>{const v=Number(volumeInput.value);volumeValue.textContent=`${v}%`;if(master)master.gain.setTargetAtTime(v/100,audioCtx.currentTime,.025);});
+  document.getElementById('audioTest').addEventListener('click',()=>{startTone('test',0);setTimeout(()=>stopTone('test'),650);});
+  recordBtn.addEventListener('click',toggleRecording);
+  playBtn.addEventListener('click',()=>{if(isPlaying)stopPlayback();else playTake();});
+  clearBtn.addEventListener('click',()=>{takes=[];updateRecorder();showToast('Gravação apagada');});
+  buildKeyboard();updateOctave();updateRecorder();
+})();
+</script>
+</body>
+</html>
